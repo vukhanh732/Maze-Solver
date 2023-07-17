@@ -2,7 +2,7 @@ import pygame
 from maze import Maze
 
 # Pygame configuration
-WIDTH, HEIGHT = 800, 800  # Window dimensions
+WIDTH, HEIGHT = 850, 850  # Window dimensions
 FPS = 60  # Frames per second
 
 # Colors
@@ -15,7 +15,7 @@ SCREEN = pygame.display.set_mode((WIDTH, HEIGHT))
 CLOCK = pygame.time.Clock()
 
 # Initialize Maze
-maze = Maze(20, WIDTH, HEIGHT)  # 20 is the size of a cell in the grid
+maze = Maze(20, 700, 700)  # 20 is the size of a cell in the grid
 
 # Game loop
 running = True
@@ -24,28 +24,34 @@ while running:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
+        elif event.type == pygame.MOUSEBUTTONDOWN:
+            mx, my = pygame.mouse.get_pos()
+            # Check if the reset button was clicked
+            if pygame.Rect(10, 10, 100, 50).collidepoint(event.pos):
+                maze = Maze(20, WIDTH, HEIGHT)  # Create a new empty maze
 
-    # Draw the reset button
-    button_color = (0, 200, 0)  # Green color
-    button_rect = pygame.Rect(10, 10, 100, 50)  # Button position and size
-    pygame.draw.rect(SCREEN, button_color, button_rect)
-    
-    # Draw the text on the button
-    font = pygame.font.Font(None, 24)  # Use the default font and size 24
-    text = font.render('Reset', True, (0, 0, 0))  # Black color
-    SCREEN.blit(text, (button_rect.x + 20, button_rect.y + 15))  # Position the text
-                
-    # Check if the left mouse button is pressed
+    # Check if the left mouse button is being held down
     if pygame.mouse.get_pressed()[0]:
         # Get the mouse position
         mx, my = pygame.mouse.get_pos()
         # Convert the mouse position to grid coordinates
         gx, gy = mx // 20, my // 20
-        # Change the corresponding cell in the maze to a wall
-        maze.maze[gy][gx] = 1
-
+        # Check if the click is within the grid
+        if gx < maze.width and gy < maze.height:
+            # Change the corresponding cell in the maze to a wall
+            maze.maze[gy][gx] = 1
 
     maze.draw(SCREEN)
+
+    # Draw the reset button
+    button_color = (0, 200, 0)  # Green color
+    button_rect = pygame.Rect(701, 0, 100, 50)  # Button position and size
+    pygame.draw.rect(SCREEN, button_color, button_rect)
+
+    # Draw the text on the button
+    font = pygame.font.Font(None, 24)  # Use the default font and size 24
+    text = font.render('Reset', True, (0, 0, 0))  # Black color
+    SCREEN.blit(text, (button_rect.x + 20, button_rect.y + 15))  # Position the text
 
     pygame.display.flip()  # Update the screen
 
